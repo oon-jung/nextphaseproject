@@ -5,7 +5,7 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: "/nextphaseproject/",          // ✅ 여기만 추가!
+  base: "/",          // ✅ 여기만 추가!
 
   server: {
     host: "::",
