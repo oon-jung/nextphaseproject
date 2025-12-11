@@ -6,7 +6,6 @@ const navItems = [
   { id: "characters", label: "FILES" },
   { id: "audio", label: "AUDIO" },
   { id: "system-crash", label: "CRASH" },
-  { id: "exhibition", label: "REALITY" },
   { id: "footer", label: "SYSTEM" },
 ];
 
