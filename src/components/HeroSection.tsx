@@ -64,7 +64,7 @@ export const HeroSection = () => {
             data-text="PROJECT NEXT PHASE"
           >
             <span className="bg-gradient-to-r from-neon-purple via-foreground to-neon-blue bg-clip-text text-transparent">
-              NEXT PHASE
+              PROJECT NEXT PHASE
             </span>
           </h1>
 
