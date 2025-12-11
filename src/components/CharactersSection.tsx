@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { HandTracking3D } from './HandTracking3D';
 
 interface Character {
   id: string;
@@ -216,86 +217,164 @@ export const CharactersSection = () => {
           viewport={{ once: true }}
           className="mb-12"
         >
-          <span className="system-label text-neon-purple">
+          <h2 className="section-title text-neon-purple">
             // 02_DATA FILES: IDOL PROTOCOL
-          </span>
+          </h2>
         </motion.div>
 
-        {/* Folder Tabs */}
-        <div className="flex flex-wrap gap-4 mb-12">
-          {characters.map((char, index) => (
-            <motion.button
-              key={char.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              onClick={() => setSelectedCharacter(char)}
-              className={`folder-tab flex items-center gap-2 ${char.glowClass}`}
-            >
-              <Icon icon="pixel:folder" className={`w-4 h-4 ${char.accentClass}`} />
-              <span className="font-mono text-sm">{char.name}</span>
-            </motion.button>
-          ))}
-        </div>
+        {/* Glassmorphism Interactive UI Container */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="glass-container rounded-lg p-6 md:p-8 relative"
+        >
+          {/* Container Header */}
+          <div className="flex items-center justify-between mb-8 pb-4 border-b border-neon-purple/20">
+            <div className="flex items-center gap-3">
+              <Icon icon="pixel:folder-open" className="w-5 h-5 text-neon-purple" />
+              <span className="font-mono text-sm text-neon-purple">SECURE_DATA_VAULT</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-neon-mint animate-pulse" />
+              <span className="font-mono text-xs text-muted-foreground">CONNECTED</span>
+            </div>
+          </div>
 
-        {/* Character Cards Grid */}
-        <div className="grid md:grid-cols-3 gap-6">
-          {characters.map((char, index) => (
+          {/* Main Content Grid */}
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* Left: 3D Hologram Interaction */}
             <motion.div
-              key={char.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.15 }}
-              onClick={() => setSelectedCharacter(char)}
-              className={`cursor-pointer group ${char.borderClass} bg-card/50 backdrop-blur-sm p-6 transition-all duration-300 hover:scale-[1.02] ${char.glowClass}`}
+              transition={{ delay: 0.2 }}
+              className="relative"
             >
-              {/* Visual Preview */}
-              <div className={`aspect-[3/4] mb-4 relative overflow-hidden bg-gradient-to-br ${char.bgGradient}`}>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <motion.span
-                    className={`text-6xl font-bold ${char.accentClass} opacity-30 group-hover:opacity-50 transition-opacity`}
-                    whileHover={{ scale: 1.1 }}
-                  >
-                    {char.name.charAt(0)}
-                  </motion.span>
-                </div>
-
-                {/* Hover Glitch Effect */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {[...Array(3)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="absolute left-0 right-0 h-1"
-                      style={{
-                        top: `${30 + i * 20}%`,
-                        backgroundColor: char.accentColor,
-                        opacity: 0.5,
-                        animation: `glitch-horizontal 0.3s ease-in-out ${i * 0.1}s`,
-                      }}
-                    />
-                  ))}
-                </div>
-
-                {/* Open indicator */}
-                <div className="absolute bottom-4 right-4 font-mono text-xs opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className={char.accentClass}>[ OPEN DATA FILE ]</span>
-                </div>
+              <div className="aspect-square rounded-lg overflow-hidden border border-neon-purple/30 bg-background/30">
+                <HandTracking3D />
               </div>
-
-              {/* Info */}
-              <div className="space-y-2">
-                <h3 className={`text-xl font-bold ${char.accentClass}`}>{char.name}</h3>
-                <p className="font-mono text-xs text-muted-foreground">{char.role}</p>
-                <div className="flex items-center gap-2 font-mono text-xs">
-                  <Icon icon="pixel:play" className={`w-3 h-3 ${char.accentClass}`} />
-                  <span className="text-muted-foreground">CLICK TO ACCESS</span>
+              <div className="mt-4 text-center">
+                <div className="font-mono text-xs text-muted-foreground mb-1">
+                  [ INTERACTIVE_HOLOGRAM ]
+                </div>
+                <div className="font-mono text-xs text-neon-purple/60">
+                  손 또는 마우스로 회전 조작 가능
                 </div>
               </div>
             </motion.div>
-          ))}
-        </div>
+
+            {/* Right: Member Folders */}
+            <div className="space-y-4">
+              <div className="font-mono text-xs text-muted-foreground mb-4">
+                // MEMBER_DATA_FILES
+              </div>
+              
+              {/* Folder List */}
+              <div className="space-y-3">
+                {characters.map((char, index) => (
+                  <motion.button
+                    key={char.id}
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 + 0.3 }}
+                    onClick={() => setSelectedCharacter(char)}
+                    className={`w-full p-4 flex items-center gap-4 
+                               bg-card/50 border border-border/50 
+                               transition-all duration-300 group
+                               hover:border-opacity-100 ${char.glowClass}`}
+                    style={{ borderColor: `${char.accentColor}33` }}
+                  >
+                    {/* Folder Icon */}
+                    <div className={`p-2 rounded ${char.bgGradient} bg-gradient-to-br`}>
+                      <Icon icon="pixel:folder" className={`w-6 h-6 ${char.accentClass}`} />
+                    </div>
+                    
+                    {/* File Info */}
+                    <div className="flex-1 text-left">
+                      <div className={`font-bold ${char.accentClass}`}>{char.name}</div>
+                      <div className="font-mono text-xs text-muted-foreground">{char.role}</div>
+                    </div>
+                    
+                    {/* Status & Action */}
+                    <div className="flex items-center gap-3">
+                      <div className="hidden sm:flex items-center gap-1">
+                        <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: char.accentColor }} />
+                        <span className="font-mono text-xs text-muted-foreground">READY</span>
+                      </div>
+                      <Icon 
+                        icon="pixel:arrow-right" 
+                        className={`w-4 h-4 ${char.accentClass} opacity-0 group-hover:opacity-100 
+                                   transform translate-x-0 group-hover:translate-x-1 transition-all`} 
+                      />
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
+
+              {/* Quick Access Cards */}
+              <div className="grid grid-cols-3 gap-3 mt-6 pt-4 border-t border-border/30">
+                {characters.map((char, index) => (
+                  <motion.div
+                    key={`card-${char.id}`}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 + 0.5 }}
+                    onClick={() => setSelectedCharacter(char)}
+                    className={`cursor-pointer aspect-[3/4] relative overflow-hidden 
+                               bg-gradient-to-br ${char.bgGradient} border border-border/30
+                               transition-all duration-300 hover:scale-[1.02] ${char.glowClass}`}
+                  >
+                    {/* Character Initial */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <motion.span
+                        className={`text-4xl font-bold ${char.accentClass} opacity-30 group-hover:opacity-50`}
+                        whileHover={{ scale: 1.1 }}
+                      >
+                        {char.name.charAt(0)}
+                      </motion.span>
+                    </div>
+                    
+                    {/* Bottom label */}
+                    <div className="absolute bottom-2 left-2 right-2">
+                      <div className={`font-mono text-xs ${char.accentClass} truncate`}>
+                        {char.name}
+                      </div>
+                    </div>
+
+                    {/* Hover Glitch */}
+                    <div className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
+                      {[...Array(3)].map((_, i) => (
+                        <div
+                          key={i}
+                          className="absolute left-0 right-0 h-0.5"
+                          style={{
+                            top: `${30 + i * 20}%`,
+                            backgroundColor: char.accentColor,
+                            opacity: 0.5,
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Container Footer */}
+          <div className="mt-8 pt-4 border-t border-neon-purple/20 flex items-center justify-between">
+            <div className="font-mono text-xs text-muted-foreground">
+              TOTAL_FILES: {characters.length} | ENCRYPTION: AES-256
+            </div>
+            <div className="font-mono text-xs text-neon-purple/60">
+              [ CLICK FILE TO ACCESS ]
+            </div>
+          </div>
+        </motion.div>
 
         {/* Modal */}
         <CharacterModal

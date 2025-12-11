@@ -27,9 +27,9 @@ export const ExhibitionSection = () => {
           viewport={{ once: true }}
           className="mb-12"
         >
-          <span className="system-label text-neon-purple">
+          <h2 className="section-title text-neon-purple">
             // 04_NEXT PHASE: REALITY
-          </span>
+          </h2>
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-center">

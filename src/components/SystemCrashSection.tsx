@@ -85,9 +85,9 @@ export const SystemCrashSection = () => {
           viewport={{ once: true }}
           className="mb-12"
         >
-          <span className="system-label text-destructive">
+          <h2 className="section-title text-destructive">
             // 03_SYSTEM_CRASH
-          </span>
+          </h2>
         </motion.div>
 
         {/* Timeline */}

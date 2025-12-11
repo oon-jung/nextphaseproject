@@ -61,9 +61,60 @@ export const WorldviewSection = () => {
           viewport={{ once: true }}
           className="mb-12"
         >
-          <span className="system-label text-neon-purple">
+          <h2 className="section-title text-neon-purple">
             // 01_ARCHIVE: DIGITAL DYSTOPIA
-          </span>
+          </h2>
+        </motion.div>
+
+        {/* New Logline - Cinematic Presentation */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="mb-16 text-center"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="inline-block p-8 md:p-12 glass-container rounded-lg relative overflow-hidden"
+          >
+            {/* Glitch overlay effect */}
+            <motion.div
+              className="absolute inset-0 bg-neon-purple/5"
+              animate={{ opacity: [0, 0.1, 0] }}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+            />
+            
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5 }}
+              className="logline-text text-2xl md:text-3xl lg:text-4xl text-neon-purple mb-6"
+            >
+              "진짜 성장은 평가가 아닌 자각에서 시작된다."
+            </motion.p>
+            
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.8 }}
+              className="font-mono text-sm md:text-base text-muted-foreground max-w-2xl mx-auto"
+            >
+              평가와 비교 속에서 길을 잃은 우리에게,<br />
+              진짜 가치는 평가 대상이 아니다.
+            </motion.p>
+
+            {/* Decorative elements */}
+            <div className="absolute top-4 left-4 w-3 h-3 border-t border-l border-neon-purple/50" />
+            <div className="absolute top-4 right-4 w-3 h-3 border-t border-r border-neon-purple/50" />
+            <div className="absolute bottom-4 left-4 w-3 h-3 border-b border-l border-neon-purple/50" />
+            <div className="absolute bottom-4 right-4 w-3 h-3 border-b border-r border-neon-purple/50" />
+          </motion.div>
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-center">
