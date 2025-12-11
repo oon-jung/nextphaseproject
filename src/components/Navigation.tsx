@@ -4,8 +4,8 @@ import { motion } from 'framer-motion';
 const navItems = [
   { id: 'worldview', label: 'WORLDVIEW' },
   { id: 'characters', label: 'FILES' },
+  { id: 'audio', label: 'AUDIO' },
   { id: 'system-crash', label: 'CRASH' },
-  { id: 'video', label: 'VIDEO' },
   { id: 'exhibition', label: 'REALITY' },
   { id: 'footer', label: 'SYSTEM' },
 ];

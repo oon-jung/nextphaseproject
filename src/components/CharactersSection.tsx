@@ -5,23 +5,6 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Hands } from '@mediapipe/hands';
 import { Camera } from '@mediapipe/camera_utils';
 
-// Kinetic Lyrics Data
-const lyricsSequence = [
-  "SYSTEM LOADING...",
-  "ZERO PERCENT",
-  "검은 화면 속",
-  "나를 깨워",
-  "ERROR ERROR ERROR",
-  "BREAK THE SYSTEM",
-  "NO MORE LIMITS",
-  "WELCOME TO",
-  "NEXT PHASE"
-];
-
-// Global audio state management
-let globalAudio: HTMLAudioElement | null = null;
-let isAudioInitialized = false;
-
 interface Character {
   id: string;
   name: string;
@@ -78,50 +61,6 @@ const characters: Character[] = [
   },
 ];
 
-// Kinetic Lyrics Component
-const KineticLyrics = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % lyricsSequence.length);
-    }, 2500);
-    return () => clearInterval(interval);
-  }, []);
-
-  const currentLyric = lyricsSequence[currentIndex];
-  const isError = currentLyric.includes('ERROR');
-
-  return (
-    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentIndex}
-          initial={{ opacity: 0, scale: 0.8, filter: 'blur(10px)' }}
-          animate={{ opacity: 0.25, scale: 1, filter: 'blur(0px)' }}
-          exit={{ 
-            opacity: 0, 
-            scale: 1.1,
-            filter: 'blur(5px)',
-            x: isError ? [0, -10, 10, -10, 0] : 0,
-          }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
-          className={`text-[8rem] md:text-[14rem] font-display font-bold text-white whitespace-nowrap
-                      ${isError ? 'text-red-500' : ''}`}
-          style={{
-            mixBlendMode: 'overlay',
-            textShadow: isError 
-              ? '0 0 20px rgba(255,0,0,0.5), 5px 5px 0 rgba(0,255,255,0.3), -5px -5px 0 rgba(255,0,255,0.3)'
-              : '0 0 30px rgba(255,255,255,0.2)',
-          }}
-        >
-          {currentLyric}
-        </motion.div>
-      </AnimatePresence>
-    </div>
-  );
-};
-
 const BentoGridModal = ({
   character,
   isOpen,
@@ -135,39 +74,9 @@ const BentoGridModal = ({
   const [isOpenPalm, setIsOpenPalm] = useState(false);
   const [handPosition, setHandPosition] = useState({ x: 0.5, y: 0.5 });
   const [mousePosition, setMousePosition] = useState({ x: 0.5, y: 0.5 });
-  const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const handsRef = useRef<Hands | null>(null);
   const cameraRef = useRef<Camera | null>(null);
-
-  // Initialize and play audio when modal opens
-  useEffect(() => {
-    if (isOpen && character) {
-      if (!globalAudio) {
-        globalAudio = new Audio('/project_theme_song.mp3');
-        globalAudio.loop = true;
-        globalAudio.volume = 0.5;
-      }
-      
-      // Always try to play when modal opens
-      globalAudio.muted = isMuted;
-      if (globalAudio.paused) {
-        globalAudio.play().catch(console.error);
-      }
-      isAudioInitialized = true;
-    }
-  }, [isOpen, character, isMuted]);
-
-  // Toggle mute
-  const toggleMute = useCallback(() => {
-    if (globalAudio) {
-      globalAudio.muted = !globalAudio.muted;
-      setIsMuted(globalAudio.muted);
-      if (!globalAudio.muted && globalAudio.paused) {
-        globalAudio.play().catch(console.error);
-      }
-    }
-  }, []);
 
   // Mouse tracking fallback
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -197,12 +106,10 @@ const BentoGridModal = ({
       hands.onResults((results) => {
         if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
           const landmarks = results.multiHandLandmarks[0];
-          // Get palm center (landmark 9)
           const palmX = landmarks[9].x;
           const palmY = landmarks[9].y;
           setHandPosition({ x: 1 - palmX, y: palmY });
 
-          // Detect open palm (check finger extension)
           const thumbTip = landmarks[4];
           const indexTip = landmarks[8];
           const middleTip = landmarks[12];
@@ -236,25 +143,25 @@ const BentoGridModal = ({
     }
   };
 
-  const stopHandTracking = () => {
+  const stopHandTracking = useCallback(() => {
     if (cameraRef.current) {
       cameraRef.current.stop();
     }
     setIsHandTracking(false);
     setIsOpenPalm(false);
-  };
+  }, []);
 
   useEffect(() => {
     return () => {
       stopHandTracking();
     };
-  }, []);
+  }, [stopHandTracking]);
 
   useEffect(() => {
     if (!isOpen) {
       stopHandTracking();
     }
-  }, [isOpen]);
+  }, [isOpen, stopHandTracking]);
 
   if (!character) return null;
 
@@ -270,26 +177,8 @@ const BentoGridModal = ({
           {/* Hidden video for hand tracking */}
           <video ref={videoRef} className="hidden" playsInline />
 
-          {/* Film Grain Background Layer */}
-          <div className="absolute inset-0 bg-background z-0">
-            <div className="film-grain opacity-50" />
-          </div>
-
-          {/* Kinetic Lyrics Layer (Behind Character) */}
-          <KineticLyrics />
-
-          {/* Sound Toggle Button */}
-          <button
-            onClick={toggleMute}
-            className="absolute top-4 right-4 z-30 p-2 rounded-full bg-background/60 backdrop-blur-sm
-                       border border-border/50 hover:border-neon-purple/50 transition-all"
-            title={isMuted ? 'Unmute' : 'Mute'}
-          >
-            <Icon 
-              icon={isMuted ? "pixel:volume-off" : "pixel:volume-full"} 
-              className="w-5 h-5 text-neon-purple" 
-            />
-          </button>
+          {/* Clean Black Background */}
+          <div className="absolute inset-0 bg-background z-0" />
 
           {/* Bento Grid Layout */}
           <div 
@@ -325,7 +214,7 @@ const BentoGridModal = ({
                 />
               </div>
 
-              {/* Scanlines - subtle effect only, glitch removed when selected */}
+              {/* Scanlines - subtle effect only */}
               <div className="scanlines absolute inset-0 pointer-events-none opacity-20" />
 
               {/* File indicator */}
@@ -484,99 +373,95 @@ export const CharactersSection = () => {
           <div className="flex items-center justify-between mb-8 pb-4 border-b border-neon-purple/20">
             <div className="flex items-center gap-3">
               <Icon icon="pixel:folder-open" className="w-5 h-5 text-neon-purple" />
-              <span className="font-mono text-sm text-neon-purple">SECURE_DATA_VAULT</span>
+              <span className="font-mono text-sm text-muted-foreground">
+                SECURE_STORAGE // 3 FILES DETECTED
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-neon-mint animate-pulse" />
-              <span className="font-mono text-xs text-muted-foreground">CONNECTED</span>
+              <span className="font-mono text-xs text-neon-mint">READY</span>
             </div>
           </div>
 
-          {/* Member Folders - Horizontal Layout */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Character Folders Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
             {characters.map((char, index) => (
               <motion.button
                 key={char.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 + 0.2 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ scale: 1.02, y: -4 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => setSelectedCharacter(char)}
-                className={`group relative p-5 flex flex-col items-center gap-4 
-                           bg-card/50 border border-border/50 rounded-lg
-                           transition-all duration-300
-                           hover:border-opacity-100 ${char.glowClass}`}
-                style={{ borderColor: `${char.accentColor}33` }}
+                className={`group relative p-5 rounded-lg transition-all duration-300
+                           border border-border/30 bg-card/30 backdrop-blur-sm
+                           hover:border-opacity-100 hover:bg-card/50
+                           ${char.borderClass}`}
               >
-                {/* Character Preview */}
-                <div className="relative w-full aspect-[3/4] rounded overflow-hidden mb-2">
-                  <img
-                    src={char.image}
-                    alt={char.name}
-                    className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                    style={{
-                      filter: `grayscale(100%) sepia(100%) saturate(400%) hue-rotate(${
-                        char.id === 'gaeon' ? '200' : 
-                        char.id === 'doa' ? '290' : '120'
-                      }deg)`,
-                    }}
+                {/* Folder Icon & Name */}
+                <div className="flex items-center gap-3 mb-4">
+                  <Icon 
+                    icon="pixelarticons:folder" 
+                    className="w-8 h-8 transition-colors duration-300"
+                    style={{ color: char.accentColor }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
-                  
-                  {/* Hover glitch effect */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {[...Array(3)].map((_, i) => (
-                      <div
-                        key={i}
-                        className="absolute left-0 right-0 h-0.5 animate-pulse"
-                        style={{
-                          top: `${30 + i * 20}%`,
-                          backgroundColor: char.accentColor,
-                          opacity: 0.6,
-                        }}
-                      />
-                    ))}
+                  <div className="text-left">
+                    <h3 className={`font-display font-bold text-lg ${char.accentClass}`}>
+                      {char.name}
+                    </h3>
+                    <p className="font-mono text-xs text-muted-foreground">
+                      {char.role}
+                    </p>
                   </div>
                 </div>
 
-                {/* Folder Icon */}
-                <div className={`p-2 rounded ${char.bgGradient} bg-gradient-to-br`}>
-                  <Icon icon="pixel:folder" className={`w-6 h-6 ${char.accentClass}`} />
+                {/* Preview Info */}
+                <div className="font-mono text-xs space-y-1 text-left">
+                  <div className="text-muted-foreground truncate">
+                    NOTE: {char.systemNote.slice(1, 30)}...
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-1.5 h-1.5 rounded-full animate-pulse"
+                      style={{ backgroundColor: char.accentColor }}
+                    />
+                    <span className="text-muted-foreground">DATA_AVAILABLE</span>
+                  </div>
                 </div>
-                
-                {/* File Info */}
-                <div className="text-center">
-                  <div className={`font-bold text-lg ${char.accentClass} font-display`}>{char.name}</div>
-                  <div className="font-mono text-xs text-muted-foreground">{char.role}</div>
-                </div>
-                
-                {/* Status */}
-                <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: char.accentColor }} />
-                  <span className="font-mono text-xs text-muted-foreground">CLICK TO ACCESS</span>
-                </div>
+
+                {/* Hover Glow */}
+                <div 
+                  className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                  style={{
+                    boxShadow: `0 0 30px ${char.accentColor}30, inset 0 0 20px ${char.accentColor}10`,
+                  }}
+                />
               </motion.button>
             ))}
           </div>
 
           {/* Container Footer */}
           <div className="mt-8 pt-4 border-t border-neon-purple/20 flex items-center justify-between">
-            <div className="font-mono text-xs text-muted-foreground">
-              TOTAL_FILES: {characters.length} | ENCRYPTION: AES-256
-            </div>
-            <div className="font-mono text-xs text-neon-purple/60">
-              [ HAND TRACKING AVAILABLE ]
-            </div>
+            <span className="font-mono text-xs text-muted-foreground">
+              CLICK TO ACCESS DATA FILE
+            </span>
+            <span className="font-mono text-xs text-neon-purple">
+              SYSTEM_v2.1
+            </span>
           </div>
         </motion.div>
+      </div>
 
-        {/* Modal */}
+      {/* Character Modal */}
+      <AnimatePresence>
         <BentoGridModal
           character={selectedCharacter}
           isOpen={!!selectedCharacter}
           onClose={() => setSelectedCharacter(null)}
         />
-      </div>
+      </AnimatePresence>
     </section>
   );
 };
