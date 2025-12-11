@@ -98,12 +98,12 @@ const KineticLyrics = () => {
         <motion.div
           key={currentIndex}
           initial={{ opacity: 0, scale: 0.8, filter: 'blur(10px)' }}
-          animate={{ opacity: 0.15, scale: 1, filter: 'blur(0px)' }}
+          animate={{ opacity: 0.25, scale: 1, filter: 'blur(0px)' }}
           exit={{ 
             opacity: 0, 
             scale: 1.1,
             filter: 'blur(5px)',
-            x: isError ? [0, -5, 5, -5, 0] : 0,
+            x: isError ? [0, -10, 10, -10, 0] : 0,
           }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
           className={`text-[8rem] md:text-[14rem] font-display font-bold text-white whitespace-nowrap
@@ -149,13 +149,14 @@ const BentoGridModal = ({
         globalAudio.volume = 0.5;
       }
       
-      if (!isAudioInitialized) {
-        globalAudio.muted = true;
+      // Always try to play when modal opens
+      globalAudio.muted = isMuted;
+      if (globalAudio.paused) {
         globalAudio.play().catch(console.error);
-        isAudioInitialized = true;
       }
+      isAudioInitialized = true;
     }
-  }, [isOpen, character]);
+  }, [isOpen, character, isMuted]);
 
   // Toggle mute
   const toggleMute = useCallback(() => {
@@ -324,33 +325,8 @@ const BentoGridModal = ({
                 />
               </div>
 
-              {/* Glitch Overlay */}
-              <div className="absolute inset-0 pointer-events-none">
-                {[...Array(5)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="absolute left-0 right-0 h-px"
-                    style={{
-                      top: `${20 + i * 15}%`,
-                      backgroundColor: character.accentColor,
-                      opacity: 0.4,
-                    }}
-                    animate={{
-                      scaleX: [0, 1, 0],
-                      x: ['-100%', '0%', '100%'],
-                    }}
-                    transition={{
-                      duration: 2,
-                      delay: i * 0.2,
-                      repeat: Infinity,
-                      repeatDelay: 4,
-                    }}
-                  />
-                ))}
-              </div>
-
-              {/* Scanlines */}
-              <div className="scanlines absolute inset-0 pointer-events-none opacity-30" />
+              {/* Scanlines - subtle effect only, glitch removed when selected */}
+              <div className="scanlines absolute inset-0 pointer-events-none opacity-20" />
 
               {/* File indicator */}
               <div className="absolute top-4 left-4 font-mono text-xs bg-background/60 backdrop-blur-sm px-2 py-1 rounded">
