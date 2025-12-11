@@ -466,3 +466,26 @@
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--neon-purple) / 0.5);
 }
+
+/* --- 긴급 수정: 클릭 방해 문제 해결 --- */
+
+/* 1. 노이즈 효과의 높이를 낮춥니다 (배경으로 보내기) */
+.film-grain {
+  z-index: 1 !important;
+}
+
+/* 2. 카드(컨테이너) 자체를 노이즈보다 위로 끌어올립니다 */
+.glass-container, 
+div[class*="glass"], 
+section {
+  position: relative !important;
+  z-index: 50 !important; /* 노이즈(1)보다 높게 설정 */
+  pointer-events: auto !important;
+}
+
+/* 3. 버튼은 카드 안에서도 가장 위로 */
+button, a, [role="button"] {
+  z-index: 100 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
