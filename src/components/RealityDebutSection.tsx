@@ -12,9 +12,10 @@ const COLORS = {
 };
 
 export const RealityDebutSection = () => {
-  const [count, setCount] = useState(0);
-  const [milestone, setMilestone] = useState<'none' | 'signal' | 'surge' | 'complete'>('none');
+  const [progress, setProgress] = useState(0);
+  const [milestone, setMilestone] = useState<'none' | 'signal' | 'surge' | 'complete' | 'rebooting'>('none');
   const [message, setMessage] = useState('AWAITING INPUT...');
+  const [isDisabled, setIsDisabled] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.3 });
@@ -23,7 +24,8 @@ export const RealityDebutSection = () => {
     switch (milestone) {
       case 'signal': return 'from-neon-blue to-neon-blue';
       case 'surge': return 'from-neon-pink to-neon-blue';
-      case 'complete': return 'from-neon-purple via-neon-pink to-neon-mint';
+      case 'complete':
+      case 'rebooting': return 'from-neon-purple via-neon-pink to-neon-mint';
       default: return 'from-neon-purple/50 to-neon-purple';
     }
   };
@@ -88,32 +90,48 @@ export const RealityDebutSection = () => {
     frame();
   };
 
-  const handleClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    if (milestone === 'complete') return;
+  const resetGame = useCallback(() => {
+    setProgress(0);
+    setMilestone('none');
+    setMessage('AWAITING INPUT...');
+    setIsDisabled(false);
+  }, []);
 
-    const newCount = count + 1;
-    setCount(newCount);
+  const handleClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    if (isDisabled || milestone === 'complete' || milestone === 'rebooting') return;
+
+    const newProgress = Math.min(progress + 5, 100);
+    setProgress(newProgress);
 
     // Small burst on every click
     triggerSmallBurst(e.clientX, e.clientY);
 
-    // Milestone checks
-    if (newCount >= 100) {
+    // Milestone checks based on percentage
+    if (newProgress >= 100) {
       setMilestone('complete');
       setMessage('SYSTEM UNLOCKED: DEBUT CONFIRMED!');
+      setIsDisabled(true);
       triggerFireworks();
-    } else if (newCount >= 50 && milestone !== 'surge') {
+      
+      // Reset after 3 seconds
+      setTimeout(() => {
+        setMilestone('rebooting');
+        setMessage('REBOOTING SYSTEM...');
+      }, 3000);
+      
+      setTimeout(() => {
+        resetGame();
+      }, 6000);
+    } else if (newProgress >= 50 && milestone !== 'surge') {
       setMilestone('surge');
       setMessage('ENERGY SURGE! KEEP GOING!');
       triggerWideSpread();
-    } else if (newCount >= 10 && milestone === 'none') {
+    } else if (newProgress >= 10 && milestone === 'none') {
       setMilestone('signal');
       setMessage('SIGNAL DETECTED...');
       triggerStarBurst();
     }
-  }, [count, milestone]);
-
-  const progressPercentage = Math.min((count / 100) * 100, 100);
+  }, [progress, milestone, isDisabled, resetGame]);
 
   return (
     <section
@@ -154,7 +172,7 @@ export const RealityDebutSection = () => {
           <motion.button
             ref={buttonRef}
             onClick={handleClick}
-            disabled={milestone === 'complete'}
+            disabled={isDisabled || milestone === 'complete' || milestone === 'rebooting'}
             whileTap={{ scale: 0.95 }}
             className={`
               relative w-32 h-32 md:w-40 md:h-40 rounded-full
@@ -205,7 +223,7 @@ export const RealityDebutSection = () => {
           {/* Counter */}
           <div className="text-center">
             <p className="font-mono text-lg md:text-xl text-foreground">
-              SYNC RATE: <span className="text-neon-purple font-bold">{count}</span> %
+              SYNC RATE: <span className="text-neon-purple font-bold">{progress}</span> %
             </p>
           </div>
 
@@ -215,7 +233,7 @@ export const RealityDebutSection = () => {
               <motion.div
                 className={`h-full bg-gradient-to-r ${getProgressColor()} rounded-full`}
                 initial={{ width: 0 }}
-                animate={{ width: `${progressPercentage}%` }}
+                animate={{ width: `${progress}%` }}
                 transition={{ duration: 0.3, ease: 'easeOut' }}
                 style={{
                   boxShadow: milestone !== 'none' 
