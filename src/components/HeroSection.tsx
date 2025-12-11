@@ -41,7 +41,7 @@ export const HeroSection = () => {
       {/* Unicorn Studio Background */}
       <div className="absolute inset-0 z-0">
         <div
-          data-us-project="hBI0EyOB70Hw8PVcxHPG"
+          data-us-project="5cdsodKRg5XKOUHPRYha"
           className="w-full h-full"
           style={{ minWidth: "100%", minHeight: "100%" }}
         />

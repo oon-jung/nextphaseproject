@@ -383,59 +383,97 @@ export const CharactersSection = () => {
             </div>
           </div>
 
-          {/* Character Folders Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+          {/* Character Silhouette Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {characters.map((char, index) => (
               <motion.button
                 key={char.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ scale: 1.02, y: -4 }}
-                whileTap={{ scale: 0.98 }}
+                transition={{ delay: index * 0.15, duration: 0.5 }}
+                whileHover={{ scale: 1.03, y: -8 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => setSelectedCharacter(char)}
-                className={`group relative p-5 rounded-lg transition-all duration-300
-                           border border-border/30 bg-card/30 backdrop-blur-sm
-                           hover:border-opacity-100 hover:bg-card/50
+                className={`group relative aspect-[3/4] rounded-lg overflow-hidden transition-all duration-500
+                           border border-border/20 bg-background/50
+                           hover:border-opacity-100
                            ${char.borderClass}`}
               >
-                {/* Folder Icon & Name */}
-                <div className="flex items-center gap-3 mb-4">
-                  <Icon 
-                    icon="pixelarticons:folder" 
-                    className="w-8 h-8 transition-colors duration-300"
-                    style={{ color: char.accentColor }}
+                {/* Silhouette Image - Grayscale with accent overlay */}
+                <div className="absolute inset-0">
+                  <img
+                    src={char.image}
+                    alt={char.name}
+                    className="w-full h-full object-cover object-top grayscale contrast-125 brightness-50 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-700"
                   />
-                  <div className="text-left">
-                    <h3 className={`font-display font-bold text-lg ${char.accentClass}`}>
-                      {char.name}
-                    </h3>
-                    <p className="font-mono text-xs text-muted-foreground">
-                      {char.role}
-                    </p>
+                  {/* Accent Color Overlay */}
+                  <div 
+                    className="absolute inset-0 mix-blend-color opacity-60 group-hover:opacity-0 transition-opacity duration-500"
+                    style={{ backgroundColor: char.accentColor }}
+                  />
+                  {/* Dark gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+                </div>
+
+                {/* Scanlines overlay */}
+                <div className="scanlines absolute inset-0 opacity-30 group-hover:opacity-10 transition-opacity duration-500" />
+
+                {/* Glitch lines on hover */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none overflow-hidden">
+                  <div 
+                    className="absolute w-full h-[2px] top-1/4 animate-pulse"
+                    style={{ backgroundColor: `${char.accentColor}40` }}
+                  />
+                  <div 
+                    className="absolute w-full h-[1px] top-2/3 animate-pulse delay-100"
+                    style={{ backgroundColor: `${char.accentColor}30` }}
+                  />
+                </div>
+
+                {/* Top Label */}
+                <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+                  <span 
+                    className="font-mono text-[10px] tracking-widest opacity-60 group-hover:opacity-100 transition-opacity"
+                    style={{ color: char.accentColor }}
+                  >
+                    FILE_{char.id.toUpperCase()}.EXE
+                  </span>
+                  <div 
+                    className="w-2 h-2 rounded-full animate-pulse"
+                    style={{ backgroundColor: char.accentColor }}
+                  />
+                </div>
+
+                {/* Bottom Content */}
+                <div className="absolute bottom-0 left-0 right-0 p-5">
+                  {/* Character Name */}
+                  <h3 
+                    className="font-display font-bold text-3xl md:text-4xl mb-1 tracking-tight transition-all duration-300 group-hover:tracking-wide"
+                    style={{ color: char.accentColor }}
+                  >
+                    {char.name}
+                  </h3>
+                  
+                  {/* Role */}
+                  <p className="font-mono text-xs text-muted-foreground mb-3 opacity-70 group-hover:opacity-100 transition-opacity">
+                    {char.role}
+                  </p>
+
+                  {/* Access Prompt */}
+                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                    <Icon icon="pixel:arrow-right" className="w-4 h-4" style={{ color: char.accentColor }} />
+                    <span className="font-mono text-xs" style={{ color: char.accentColor }}>
+                      ACCESS DATA
+                    </span>
                   </div>
                 </div>
 
-                {/* Preview Info */}
-                <div className="font-mono text-xs space-y-1 text-left">
-                  <div className="text-muted-foreground truncate">
-                    NOTE: {char.systemNote.slice(1, 30)}...
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-1.5 h-1.5 rounded-full animate-pulse"
-                      style={{ backgroundColor: char.accentColor }}
-                    />
-                    <span className="text-muted-foreground">DATA_AVAILABLE</span>
-                  </div>
-                </div>
-
-                {/* Hover Glow */}
+                {/* Neon Glow Effect on Hover */}
                 <div 
-                  className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                  className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                   style={{
-                    boxShadow: `0 0 30px ${char.accentColor}30, inset 0 0 20px ${char.accentColor}10`,
+                    boxShadow: `0 0 40px ${char.accentColor}40, inset 0 0 60px ${char.accentColor}15`,
                   }}
                 />
               </motion.button>
