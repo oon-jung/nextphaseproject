@@ -14,6 +14,8 @@ interface HandTracking3DProps {
   className?: string;
 }
 
+type TrackingStatus = 'idle' | 'searching' | 'detected' | 'mouse';
+
 export const HandTracking3D = ({ className = '' }: HandTracking3DProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -23,14 +25,18 @@ export const HandTracking3D = ({ className = '' }: HandTracking3DProps) => {
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const meshRef = useRef<THREE.Mesh | null>(null);
   const animationIdRef = useRef<number>(0);
+  const lastHandDetectedRef = useRef<number>(0);
   
   const [isLoading, setIsLoading] = useState(true);
   const [cameraEnabled, setCameraEnabled] = useState(false);
-  const [handDetected, setHandDetected] = useState(false);
+  const [trackingStatus, setTrackingStatus] = useState<TrackingStatus>('idle');
+  const [isExploded, setIsExploded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
   const targetRotationRef = useRef({ x: 0, y: 0 });
   const currentRotationRef = useRef({ x: 0, y: 0 });
+  const targetScaleRef = useRef(1);
+  const currentScaleRef = useRef(1);
 
   // Initialize Three.js scene
   const initThreeJS = useCallback(() => {
@@ -103,11 +109,15 @@ export const HandTracking3D = ({ className = '' }: HandTracking3DProps) => {
       // Smooth interpolation toward target rotation
       currentRotationRef.current.x += (targetRotationRef.current.x - currentRotationRef.current.x) * 0.1;
       currentRotationRef.current.y += (targetRotationRef.current.y - currentRotationRef.current.y) * 0.1;
+      
+      // Smooth scale interpolation for explode effect
+      currentScaleRef.current += (targetScaleRef.current - currentScaleRef.current) * 0.15;
 
       if (meshRef.current) {
         // Apply hand-controlled rotation + automatic slow spin
         meshRef.current.rotation.x = currentRotationRef.current.x + Date.now() * 0.0001;
         meshRef.current.rotation.y = currentRotationRef.current.y + Date.now() * 0.0002;
+        meshRef.current.scale.setScalar(currentScaleRef.current);
       }
 
       renderer.render(scene, camera);
@@ -117,11 +127,46 @@ export const HandTracking3D = ({ className = '' }: HandTracking3DProps) => {
     setIsLoading(false);
   }, []);
 
+  // Detect open palm gesture
+  const detectOpenPalm = useCallback((landmarks: any[]): boolean => {
+    // Check if all fingers are extended by comparing fingertip Y to PIP joint Y
+    const fingerTips = [8, 12, 16, 20]; // Index, Middle, Ring, Pinky tips
+    const fingerPIPs = [6, 10, 14, 18]; // Corresponding PIP joints
+    
+    let extendedFingers = 0;
+    for (let i = 0; i < fingerTips.length; i++) {
+      if (landmarks[fingerTips[i]].y < landmarks[fingerPIPs[i]].y) {
+        extendedFingers++;
+      }
+    }
+    
+    // Thumb check (different axis)
+    if (landmarks[4].x > landmarks[3].x) {
+      extendedFingers++;
+    }
+    
+    return extendedFingers >= 4;
+  }, []);
+
+  // Trigger explode effect
+  const triggerExplode = useCallback(() => {
+    if (isExploded) return;
+    setIsExploded(true);
+    targetScaleRef.current = 1.5;
+    
+    setTimeout(() => {
+      targetScaleRef.current = 1;
+      setIsExploded(false);
+    }, 500);
+  }, [isExploded]);
+
   // Initialize MediaPipe Hand Tracking
   const initHandTracking = useCallback(async () => {
     if (!videoRef.current) return;
 
     try {
+      setTrackingStatus('searching');
+      
       // Request camera permission
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { width: 320, height: 240, facingMode: 'user' },
@@ -164,7 +209,8 @@ export const HandTracking3D = ({ className = '' }: HandTracking3DProps) => {
 
       hands.onResults((results: any) => {
         if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-          setHandDetected(true);
+          lastHandDetectedRef.current = Date.now();
+          setTrackingStatus('detected');
           const landmarks = results.multiHandLandmarks[0];
           
           // Get wrist position (landmark 0) for rotation control
@@ -176,8 +222,18 @@ export const HandTracking3D = ({ className = '' }: HandTracking3DProps) => {
           const rotX = (wrist.y - 0.5) * Math.PI;
 
           targetRotationRef.current = { x: rotX, y: rotY };
+          
+          // Check for open palm gesture
+          if (detectOpenPalm(landmarks)) {
+            triggerExplode();
+          }
         } else {
-          setHandDetected(false);
+          // If no hand detected for 1 second, switch to mouse mode
+          if (Date.now() - lastHandDetectedRef.current > 1000) {
+            setTrackingStatus('mouse');
+          } else {
+            setTrackingStatus('searching');
+          }
         }
       });
 
@@ -195,14 +251,16 @@ export const HandTracking3D = ({ className = '' }: HandTracking3DProps) => {
 
     } catch (err) {
       console.error('Hand tracking error:', err);
-      setError('Camera access denied. Using mouse control.');
+      setError('카메라 접근 불가 - 마우스 모드로 전환됨');
       setCameraEnabled(false);
+      setTrackingStatus('mouse');
     }
-  }, []);
+  }, [detectOpenPalm, triggerExplode]);
 
-  // Mouse fallback control
+  // Mouse fallback control - always active when no hand detected
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (cameraEnabled && handDetected) return; // Skip if hand is tracking
+    // Only use mouse when hand is not actively tracking
+    if (trackingStatus === 'detected') return;
 
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -214,7 +272,18 @@ export const HandTracking3D = ({ className = '' }: HandTracking3DProps) => {
       x: (y - 0.5) * Math.PI,
       y: (x - 0.5) * Math.PI * 2,
     };
-  }, [cameraEnabled, handDetected]);
+    
+    if (trackingStatus === 'idle') {
+      setTrackingStatus('mouse');
+    }
+  }, [trackingStatus]);
+
+  // Mouse click for explode effect
+  const handleMouseDown = useCallback(() => {
+    if (trackingStatus !== 'detected') {
+      triggerExplode();
+    }
+  }, [trackingStatus, triggerExplode]);
 
   // Handle resize
   useEffect(() => {
@@ -251,11 +320,31 @@ export const HandTracking3D = ({ className = '' }: HandTracking3DProps) => {
     initHandTracking();
   };
 
+  // Get status indicator color
+  const getStatusColor = () => {
+    switch (trackingStatus) {
+      case 'detected': return 'bg-neon-mint';
+      case 'searching': return 'bg-neon-pink animate-pulse';
+      case 'mouse': return 'bg-neon-blue';
+      default: return 'bg-muted-foreground';
+    }
+  };
+
+  const getStatusText = () => {
+    switch (trackingStatus) {
+      case 'detected': return 'HAND_DETECTED';
+      case 'searching': return 'SEARCHING...';
+      case 'mouse': return 'MOUSE_MODE';
+      default: return 'STANDBY';
+    }
+  };
+
   return (
     <div
       ref={containerRef}
       className={`relative w-full h-full min-h-[300px] ${className}`}
       onMouseMove={handleMouseMove}
+      onMouseDown={handleMouseDown}
     >
       {/* Hidden video element for camera feed */}
       <video
@@ -268,7 +357,7 @@ export const HandTracking3D = ({ className = '' }: HandTracking3DProps) => {
       {/* Three.js Canvas */}
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full"
+        className="absolute inset-0 w-full h-full cursor-pointer"
       />
 
       {/* UI Overlay */}
@@ -279,32 +368,29 @@ export const HandTracking3D = ({ className = '' }: HandTracking3DProps) => {
         <div className="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2 border-neon-purple" />
         <div className="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 border-neon-purple" />
 
-        {/* Status indicators */}
+        {/* Status indicator dot - top right corner */}
+        <div className="absolute top-4 right-4 flex items-center gap-2">
+          <div className={`w-3 h-3 rounded-full ${getStatusColor()}`} />
+          <span className="font-mono text-xs text-muted-foreground">
+            [ {getStatusText()} ]
+          </span>
+        </div>
+
+        {/* Status indicators - top left */}
         <div className="absolute top-4 left-4 font-mono text-xs space-y-1">
           <div className="text-muted-foreground">
-            [ HOLOGRAM_RENDER: <span className="text-neon-mint">ACTIVE</span> ]
+            [ HOLOGRAM: <span className="text-neon-mint">ACTIVE</span> ]
           </div>
-          {cameraEnabled && (
-            <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              className={handDetected ? 'text-neon-mint' : 'text-neon-pink'}
-            >
-              [ HAND_TRACK: {handDetected ? 'DETECTED' : 'SEARCHING...'} ]
-            </motion.div>
-          )}
         </div>
 
         {/* Instructions */}
         <div className="absolute bottom-4 left-4 right-4 font-mono text-xs text-center text-muted-foreground">
-          {cameraEnabled ? (
-            handDetected ? (
-              <span className="text-neon-mint">손을 움직여 홀로그램을 회전시키세요</span>
-            ) : (
-              <span className="text-neon-pink">손을 카메라에 보여주세요</span>
-            )
+          {trackingStatus === 'detected' ? (
+            <span className="text-neon-mint">손을 움직여 회전 / 손바닥을 펴서 확대</span>
+          ) : trackingStatus === 'searching' ? (
+            <span className="text-neon-pink">손을 카메라에 보여주세요 (또는 마우스 사용)</span>
           ) : (
-            <span>마우스를 움직여 홀로그램을 회전시키세요</span>
+            <span>마우스로 회전 / 클릭으로 확대 효과</span>
           )}
         </div>
       </div>
@@ -335,9 +421,13 @@ export const HandTracking3D = ({ className = '' }: HandTracking3DProps) => {
 
       {/* Error message */}
       {error && (
-        <div className="absolute top-4 right-4 font-mono text-xs text-neon-pink">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute top-12 right-4 font-mono text-xs text-neon-pink bg-background/80 px-2 py-1 rounded"
+        >
           {error}
-        </div>
+        </motion.div>
       )}
 
       {/* Camera preview (small thumbnail) */}
@@ -345,7 +435,7 @@ export const HandTracking3D = ({ className = '' }: HandTracking3DProps) => {
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="absolute bottom-4 right-4 w-24 h-18 border border-neon-purple/50 overflow-hidden"
+          className="absolute bottom-12 right-4 w-20 h-15 border border-neon-purple/50 overflow-hidden rounded"
         >
           <video
             ref={(el) => {
@@ -354,11 +444,14 @@ export const HandTracking3D = ({ className = '' }: HandTracking3DProps) => {
                 el.play();
               }
             }}
-            className="w-full h-full object-cover opacity-50"
+            className="w-full h-full object-cover opacity-60"
             playsInline
             muted
           />
           <div className="absolute inset-0 border border-neon-purple/30" />
+          <div className="absolute bottom-0 left-0 right-0 bg-background/60 text-center">
+            <span className="font-mono text-[8px] text-muted-foreground">CAM</span>
+          </div>
         </motion.div>
       )}
     </div>

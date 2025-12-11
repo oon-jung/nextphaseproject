@@ -4,7 +4,6 @@ import { WorldviewSection } from '@/components/WorldviewSection';
 import { CharactersSection } from '@/components/CharactersSection';
 import { AudioPlayerSection } from '@/components/AudioPlayerSection';
 import { SystemCrashSection } from '@/components/SystemCrashSection';
-import { ExhibitionSection } from '@/components/ExhibitionSection';
 import { FooterSection } from '@/components/FooterSection';
 
 const Index = () => {
@@ -23,7 +22,6 @@ const Index = () => {
         <CharactersSection />
         <AudioPlayerSection />
         <SystemCrashSection />
-        <ExhibitionSection />
         <FooterSection />
       </main>
     </div>
