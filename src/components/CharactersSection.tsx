@@ -1,9 +1,9 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Icon } from '@iconify/react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Hands } from '@mediapipe/hands';
-import { Camera } from '@mediapipe/camera_utils';
+import { useState, useRef, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Icon } from "@iconify/react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Hands } from "@mediapipe/hands";
+import { Camera } from "@mediapipe/camera_utils";
 
 interface Character {
   id: string;
@@ -21,43 +21,43 @@ interface Character {
 
 const characters: Character[] = [
   {
-    id: 'gaeon',
-    name: 'GAEON',
-    role: 'Main Rapper & Dancer',
-    trait: 'Husky Voice, Model Aura',
+    id: "gaeon",
+    name: "GAEON",
+    role: "Rapper",
+    trait: "Husky Voice, Model Aura",
     systemNote: '"차가운 데이터 뒤에 숨겨진 온기 감지됨."',
-    accentColor: '#2E59FF',
-    accentClass: 'text-neon-blue',
-    glowClass: 'hover-glow-blue',
-    borderClass: 'neon-border-blue',
-    bgGradient: 'from-neon-blue/20 to-transparent',
-    image: '/gaeon_visual.png',
+    accentColor: "#2E59FF",
+    accentClass: "text-neon-blue",
+    glowClass: "hover-glow-blue",
+    borderClass: "neon-border-blue",
+    bgGradient: "from-neon-blue/20 to-transparent",
+    image: "/gaeon_visual.png",
   },
   {
-    id: 'doa',
-    name: 'DOA',
-    role: 'Leader & Vocal',
-    trait: 'Reversal Charm, Thoughtful',
+    id: "doa",
+    name: "DOA",
+    role: "Leader & Vocal",
+    trait: "Reversal Charm, Thoughtful",
     systemNote: '"예측 불가능한 리더십. 알고리즘 불일치."',
-    accentColor: '#FF0099',
-    accentClass: 'text-neon-pink',
-    glowClass: 'hover-glow-pink',
-    borderClass: 'neon-border-pink',
-    bgGradient: 'from-neon-pink/20 to-transparent',
-    image: '/doa_visual.png',
+    accentColor: "#FF0099",
+    accentClass: "text-neon-pink",
+    glowClass: "hover-glow-pink",
+    borderClass: "neon-border-pink",
+    bgGradient: "from-neon-pink/20 to-transparent",
+    image: "/doa_visual.png",
   },
   {
-    id: 'ram',
-    name: 'RAM',
-    role: 'Mood Maker',
-    trait: 'Red Hair, Unstoppable Energy',
+    id: "ram",
+    name: "RAM",
+    role: "Dancer",
+    trait: "Unstoppable Energy",
     systemNote: '"에너지 수치 초과. 통제 불가능."',
-    accentColor: '#00FF9D',
-    accentClass: 'text-neon-mint',
-    glowClass: 'hover-glow-mint',
-    borderClass: 'neon-border-mint',
-    bgGradient: 'from-neon-mint/20 to-transparent',
-    image: '/ram_visual.png',
+    accentColor: "#00FF9D",
+    accentClass: "text-neon-mint",
+    glowClass: "hover-glow-mint",
+    borderClass: "neon-border-mint",
+    bgGradient: "from-neon-mint/20 to-transparent",
+    image: "/ram_visual.png",
   },
 ];
 
@@ -139,7 +139,7 @@ const BentoGridModal = ({
       await camera.start();
       setIsHandTracking(true);
     } catch (error) {
-      console.error('Hand tracking error:', error);
+      console.error("Hand tracking error:", error);
     }
   };
 
@@ -181,18 +181,18 @@ const BentoGridModal = ({
           <div className="absolute inset-0 bg-background z-0" />
 
           {/* Bento Grid Layout */}
-          <div 
+          <div
             className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-3 p-4 md:p-6 min-h-[500px]"
             onMouseMove={handleMouseMove}
-            style={{ perspective: '1000px' }}
+            style={{ perspective: "1000px" }}
           >
             {/* Left Main Box - Character Image */}
             <motion.div
               className="md:col-span-2 md:row-span-2 relative overflow-hidden rounded-lg border border-border/30"
               style={{
-                transformStyle: 'preserve-3d',
+                transformStyle: "preserve-3d",
                 transform: `rotateX(${-rotateX}deg) rotateY(${rotateY}deg) translateZ(${translateZ}px)`,
-                transition: 'transform 0.1s ease-out',
+                transition: "transform 0.1s ease-out",
               }}
             >
               {/* Character Image with Duotone Filter */}
@@ -201,14 +201,13 @@ const BentoGridModal = ({
                   src={character.image}
                   alt={character.name}
                   className={`w-full h-full object-cover object-top transition-all duration-500 ${
-                    isOpenPalm ? '' : 'grayscale'
+                    isOpenPalm ? "" : "grayscale"
                   }`}
                   style={{
-                    filter: isOpenPalm 
-                      ? 'none' 
+                    filter: isOpenPalm
+                      ? "none"
                       : `grayscale(100%) sepia(100%) saturate(400%) hue-rotate(${
-                          character.id === 'gaeon' ? '200' : 
-                          character.id === 'doa' ? '290' : '120'
+                          character.id === "gaeon" ? "200" : character.id === "doa" ? "290" : "120"
                         }deg)`,
                   }}
                 />
@@ -227,18 +226,16 @@ const BentoGridModal = ({
                 <button
                   onClick={isHandTracking ? stopHandTracking : startHandTracking}
                   className={`font-mono text-xs px-3 py-1.5 rounded border transition-all ${
-                    isHandTracking 
-                      ? 'border-neon-mint text-neon-mint bg-neon-mint/10' 
-                      : 'border-border/50 text-muted-foreground hover:border-neon-purple hover:text-neon-purple'
+                    isHandTracking
+                      ? "border-neon-mint text-neon-mint bg-neon-mint/10"
+                      : "border-border/50 text-muted-foreground hover:border-neon-purple hover:text-neon-purple"
                   }`}
                 >
                   <Icon icon="pixel:video" className="w-4 h-4 inline mr-2" />
-                  {isHandTracking ? 'TRACKING ON' : 'START TRACKING'}
+                  {isHandTracking ? "TRACKING ON" : "START TRACKING"}
                 </button>
                 {isOpenPalm && (
-                  <div className="font-mono text-xs text-neon-mint animate-pulse">
-                    ✋ OPEN PALM DETECTED
-                  </div>
+                  <div className="font-mono text-xs text-neon-mint animate-pulse">✋ OPEN PALM DETECTED</div>
                 )}
               </div>
             </motion.div>
@@ -247,18 +244,16 @@ const BentoGridModal = ({
             <motion.div
               className="p-4 md:p-6 rounded-lg border border-border/30 bg-card/50 backdrop-blur-sm"
               style={{
-                transformStyle: 'preserve-3d',
+                transformStyle: "preserve-3d",
                 transform: `rotateX(${-rotateX * 0.5}deg) rotateY(${rotateY * 0.5}deg) translateZ(${translateZ * 0.5}px)`,
-                transition: 'transform 0.1s ease-out',
+                transition: "transform 0.1s ease-out",
               }}
             >
-              <div className="font-mono text-xs text-muted-foreground mb-2">
-                // DATA_PROFILE
-              </div>
+              <div className="font-mono text-xs text-muted-foreground mb-2">// DATA_PROFILE</div>
               <h3 className={`text-2xl md:text-3xl font-bold ${character.accentClass} font-display mb-3`}>
                 {character.name}
               </h3>
-              
+
               <div className="space-y-2 font-mono text-sm">
                 <div className="flex justify-between border-b border-border/30 pb-2">
                   <span className="text-muted-foreground">ROLE:</span>
@@ -272,7 +267,10 @@ const BentoGridModal = ({
 
               {/* Status indicator */}
               <div className="mt-4 flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: character.accentColor }} />
+                <div
+                  className="w-2 h-2 rounded-full animate-pulse"
+                  style={{ backgroundColor: character.accentColor }}
+                />
                 <span className="font-mono text-xs text-muted-foreground">DATA_ACTIVE</span>
               </div>
             </motion.div>
@@ -281,29 +279,25 @@ const BentoGridModal = ({
             <motion.div
               className="p-4 md:p-6 rounded-lg border border-border/30 bg-card/50 backdrop-blur-sm relative overflow-hidden"
               style={{
-                transformStyle: 'preserve-3d',
+                transformStyle: "preserve-3d",
                 transform: `rotateX(${-rotateX * 0.5}deg) rotateY(${rotateY * 0.5}deg) translateZ(${translateZ * 0.3}px)`,
-                transition: 'transform 0.1s ease-out',
+                transition: "transform 0.1s ease-out",
               }}
             >
               {/* Accent glow */}
-              <div 
+              <div
                 className="absolute -top-20 -right-20 w-40 h-40 rounded-full blur-3xl opacity-20"
                 style={{ backgroundColor: character.accentColor }}
               />
 
-              <div className="font-mono text-xs text-muted-foreground mb-3">
-                SYSTEM_NOTE:
-              </div>
-              <p className={`text-sm italic ${character.accentClass} leading-relaxed`}>
-                {character.systemNote}
-              </p>
+              <div className="font-mono text-xs text-muted-foreground mb-3">SYSTEM_NOTE:</div>
+              <p className={`text-sm italic ${character.accentClass} leading-relaxed`}>{character.systemNote}</p>
 
               {/* Progress bars */}
               <div className="mt-4 space-y-2">
                 {[
-                  { label: 'SYNC', value: 87 },
-                  { label: 'INTEGRITY', value: 95 },
+                  { label: "SYNC", value: 87 },
+                  { label: "INTEGRITY", value: 95 },
                 ].map((metric) => (
                   <div key={metric.label}>
                     <div className="flex justify-between font-mono text-xs mb-1">
@@ -356,9 +350,7 @@ export const CharactersSection = () => {
           viewport={{ once: true }}
           className="mb-12"
         >
-          <h2 className="section-title text-neon-purple">
-            // 02_DATA FILES: IDOL PROTOCOL
-          </h2>
+          <h2 className="section-title text-neon-purple">// 02_DATA FILES: IDOL PROTOCOL</h2>
         </motion.div>
 
         {/* Glassmorphism Interactive UI Container */}
@@ -373,9 +365,7 @@ export const CharactersSection = () => {
           <div className="flex items-center justify-between mb-8 pb-4 border-b border-neon-purple/20">
             <div className="flex items-center gap-3">
               <Icon icon="pixel:folder-open" className="w-5 h-5 text-neon-purple" />
-              <span className="font-mono text-sm text-muted-foreground">
-                SECURE_STORAGE // 3 FILES DETECTED
-              </span>
+              <span className="font-mono text-sm text-muted-foreground">SECURE_STORAGE // 3 FILES DETECTED</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-neon-mint animate-pulse" />
@@ -408,7 +398,7 @@ export const CharactersSection = () => {
                     className="w-full h-full object-cover object-top grayscale contrast-125 brightness-50 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-700"
                   />
                   {/* Accent Color Overlay */}
-                  <div 
+                  <div
                     className="absolute inset-0 mix-blend-color opacity-60 group-hover:opacity-0 transition-opacity duration-500"
                     style={{ backgroundColor: char.accentColor }}
                   />
@@ -421,11 +411,11 @@ export const CharactersSection = () => {
 
                 {/* Glitch lines on hover */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none overflow-hidden">
-                  <div 
+                  <div
                     className="absolute w-full h-[2px] top-1/4 animate-pulse"
                     style={{ backgroundColor: `${char.accentColor}40` }}
                   />
-                  <div 
+                  <div
                     className="absolute w-full h-[1px] top-2/3 animate-pulse delay-100"
                     style={{ backgroundColor: `${char.accentColor}30` }}
                   />
@@ -433,28 +423,25 @@ export const CharactersSection = () => {
 
                 {/* Top Label */}
                 <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
-                  <span 
+                  <span
                     className="font-mono text-[10px] tracking-widest opacity-60 group-hover:opacity-100 transition-opacity"
                     style={{ color: char.accentColor }}
                   >
                     FILE_{char.id.toUpperCase()}.EXE
                   </span>
-                  <div 
-                    className="w-2 h-2 rounded-full animate-pulse"
-                    style={{ backgroundColor: char.accentColor }}
-                  />
+                  <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: char.accentColor }} />
                 </div>
 
                 {/* Bottom Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-5">
                   {/* Character Name */}
-                  <h3 
+                  <h3
                     className="font-display font-bold text-3xl md:text-4xl mb-1 tracking-tight transition-all duration-300 group-hover:tracking-wide"
                     style={{ color: char.accentColor }}
                   >
                     {char.name}
                   </h3>
-                  
+
                   {/* Role */}
                   <p className="font-mono text-xs text-muted-foreground mb-3 opacity-70 group-hover:opacity-100 transition-opacity">
                     {char.role}
@@ -470,7 +457,7 @@ export const CharactersSection = () => {
                 </div>
 
                 {/* Neon Glow Effect on Hover */}
-                <div 
+                <div
                   className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                   style={{
                     boxShadow: `0 0 40px ${char.accentColor}40, inset 0 0 60px ${char.accentColor}15`,
@@ -482,12 +469,8 @@ export const CharactersSection = () => {
 
           {/* Container Footer */}
           <div className="mt-8 pt-4 border-t border-neon-purple/20 flex items-center justify-between">
-            <span className="font-mono text-xs text-muted-foreground">
-              CLICK TO ACCESS DATA FILE
-            </span>
-            <span className="font-mono text-xs text-neon-purple">
-              SYSTEM_v2.1
-            </span>
+            <span className="font-mono text-xs text-muted-foreground">CLICK TO ACCESS DATA FILE</span>
+            <span className="font-mono text-xs text-neon-purple">SYSTEM_v2.1</span>
           </div>
         </motion.div>
       </div>
