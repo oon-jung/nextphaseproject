@@ -449,6 +449,20 @@
   border-radius: 4px;
 }
 
+  /* --- 긴급 수정: 버튼 클릭 문제 해결 --- */
+  @layer utilities {
+  button, a, [role="button"], input[type="submit"] {
+    position: relative !important;
+    z-index: 10000 !important; /* film-grain(9999)보다 1 높게 설정 */
+    cursor: pointer !important;
+  }
+  
+  /* 혹시 모를 다른 방해꾼들도 클릭 통과시키기 */
+  .film-grain, .scanlines, .scanlines::before {
+    pointer-events: none !important;
+  }
+}
+
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--neon-purple) / 0.5);
 }
