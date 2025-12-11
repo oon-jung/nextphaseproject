@@ -1,9 +1,26 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Hands, HAND_CONNECTIONS } from '@mediapipe/hands';
+import { Hands } from '@mediapipe/hands';
 import { Camera } from '@mediapipe/camera_utils';
+
+// Kinetic Lyrics Data
+const lyricsSequence = [
+  "SYSTEM LOADING...",
+  "ZERO PERCENT",
+  "검은 화면 속",
+  "나를 깨워",
+  "ERROR ERROR ERROR",
+  "BREAK THE SYSTEM",
+  "NO MORE LIMITS",
+  "WELCOME TO",
+  "NEXT PHASE"
+];
+
+// Global audio state management
+let globalAudio: HTMLAudioElement | null = null;
+let isAudioInitialized = false;
 
 interface Character {
   id: string;
@@ -61,6 +78,50 @@ const characters: Character[] = [
   },
 ];
 
+// Kinetic Lyrics Component
+const KineticLyrics = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % lyricsSequence.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
+
+  const currentLyric = lyricsSequence[currentIndex];
+  const isError = currentLyric.includes('ERROR');
+
+  return (
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentIndex}
+          initial={{ opacity: 0, scale: 0.8, filter: 'blur(10px)' }}
+          animate={{ opacity: 0.15, scale: 1, filter: 'blur(0px)' }}
+          exit={{ 
+            opacity: 0, 
+            scale: 1.1,
+            filter: 'blur(5px)',
+            x: isError ? [0, -5, 5, -5, 0] : 0,
+          }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+          className={`text-[8rem] md:text-[14rem] font-display font-bold text-white whitespace-nowrap
+                      ${isError ? 'text-red-500' : ''}`}
+          style={{
+            mixBlendMode: 'overlay',
+            textShadow: isError 
+              ? '0 0 20px rgba(255,0,0,0.5), 5px 5px 0 rgba(0,255,255,0.3), -5px -5px 0 rgba(255,0,255,0.3)'
+              : '0 0 30px rgba(255,255,255,0.2)',
+          }}
+        >
+          {currentLyric}
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+};
+
 const BentoGridModal = ({
   character,
   isOpen,
@@ -74,9 +135,38 @@ const BentoGridModal = ({
   const [isOpenPalm, setIsOpenPalm] = useState(false);
   const [handPosition, setHandPosition] = useState({ x: 0.5, y: 0.5 });
   const [mousePosition, setMousePosition] = useState({ x: 0.5, y: 0.5 });
+  const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const handsRef = useRef<Hands | null>(null);
   const cameraRef = useRef<Camera | null>(null);
+
+  // Initialize and play audio when modal opens
+  useEffect(() => {
+    if (isOpen && character) {
+      if (!globalAudio) {
+        globalAudio = new Audio('/project_theme_song.mp3');
+        globalAudio.loop = true;
+        globalAudio.volume = 0.5;
+      }
+      
+      if (!isAudioInitialized) {
+        globalAudio.muted = true;
+        globalAudio.play().catch(console.error);
+        isAudioInitialized = true;
+      }
+    }
+  }, [isOpen, character]);
+
+  // Toggle mute
+  const toggleMute = useCallback(() => {
+    if (globalAudio) {
+      globalAudio.muted = !globalAudio.muted;
+      setIsMuted(globalAudio.muted);
+      if (!globalAudio.muted && globalAudio.paused) {
+        globalAudio.play().catch(console.error);
+      }
+    }
+  }, []);
 
   // Mouse tracking fallback
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -175,13 +265,34 @@ const BentoGridModal = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-5xl bg-background/95 backdrop-blur-xl border-border/50 p-0 overflow-hidden">
-        <div className={`${character.borderClass}`}>
+        <div className={`${character.borderClass} relative`}>
           {/* Hidden video for hand tracking */}
           <video ref={videoRef} className="hidden" playsInline />
 
+          {/* Film Grain Background Layer */}
+          <div className="absolute inset-0 bg-background z-0">
+            <div className="film-grain opacity-50" />
+          </div>
+
+          {/* Kinetic Lyrics Layer (Behind Character) */}
+          <KineticLyrics />
+
+          {/* Sound Toggle Button */}
+          <button
+            onClick={toggleMute}
+            className="absolute top-4 right-4 z-30 p-2 rounded-full bg-background/60 backdrop-blur-sm
+                       border border-border/50 hover:border-neon-purple/50 transition-all"
+            title={isMuted ? 'Unmute' : 'Mute'}
+          >
+            <Icon 
+              icon={isMuted ? "pixel:volume-off" : "pixel:volume-full"} 
+              className="w-5 h-5 text-neon-purple" 
+            />
+          </button>
+
           {/* Bento Grid Layout */}
           <div 
-            className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 md:p-6 min-h-[500px]"
+            className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-3 p-4 md:p-6 min-h-[500px]"
             onMouseMove={handleMouseMove}
             style={{ perspective: '1000px' }}
           >
