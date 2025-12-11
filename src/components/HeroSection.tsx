@@ -1,14 +1,14 @@
-import { useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { Icon } from '@iconify/react';
+import { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
+import { Icon } from "@iconify/react";
 
 export const HeroSection = () => {
   const unicornRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Initialize Unicorn Studio
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
+    const script = document.createElement("script");
+    script.type = "text/javascript";
     script.innerHTML = `
       !function(){
         if(!window.UnicornStudio){
@@ -30,9 +30,9 @@ export const HeroSection = () => {
   }, []);
 
   const scrollToNext = () => {
-    const worldview = document.getElementById('worldview');
+    const worldview = document.getElementById("worldview");
     if (worldview) {
-      worldview.scrollIntoView({ behavior: 'smooth' });
+      worldview.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -43,7 +43,7 @@ export const HeroSection = () => {
         <div
           data-us-project="5cdsodKRg5XKOUHPRYha"
           className="w-full h-full"
-          style={{ minWidth: '100%', minHeight: '100%' }}
+          style={{ minWidth: "100%", minHeight: "100%" }}
         />
       </div>
 
@@ -64,7 +64,7 @@ export const HeroSection = () => {
             data-text="PROJECT NEXT PHASE"
           >
             <span className="bg-gradient-to-r from-neon-purple via-foreground to-neon-blue bg-clip-text text-transparent">
-              PROJECT NEXT PHASE
+              NEXT PHASE PROJECT
             </span>
           </h1>
 
@@ -89,7 +89,7 @@ export const HeroSection = () => {
             transition={{ delay: 1.2 }}
             className="font-mono text-xs md:text-sm text-muted-foreground max-w-xl mx-auto"
           >
-            Digital Dystopia & System Awakening // 2D–3D Idol System Exhibition
+            A 2D–3D Hybrid Interactive Music Video // Capstone Design Project I in the Department of Art & Technology
           </motion.p>
         </motion.div>
 
@@ -102,10 +102,7 @@ export const HeroSection = () => {
           className="absolute bottom-12 flex flex-col items-center gap-2 text-muted-foreground hover:text-neon-purple transition-colors cursor-pointer group"
         >
           <span className="font-mono text-xs tracking-widest">SCROLL TO ACCESS NEXT PHASE</span>
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          >
+          <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
             <Icon icon="pixel:arrow-down" className="w-6 h-6 group-hover:text-neon-purple" />
           </motion.div>
         </motion.button>
