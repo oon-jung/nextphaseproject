@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Oswald:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {
@@ -229,6 +229,62 @@
   .system-label {
     @apply font-mono text-sm tracking-widest uppercase;
     color: hsl(var(--muted-foreground));
+  }
+
+  /* Section Title - Bold Oswald */
+  .section-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  @media (min-width: 768px) {
+    .section-title {
+      font-size: 2rem;
+    }
+  }
+
+  /* Glassmorphism Container */
+  .glass-container {
+    background: hsl(var(--card) / 0.3);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--neon-purple) / 0.3);
+    box-shadow: 
+      0 0 30px hsl(var(--neon-purple) / 0.1),
+      inset 0 0 30px hsl(var(--neon-purple) / 0.05);
+  }
+
+  .glass-container-inner {
+    position: relative;
+  }
+
+  .glass-container-inner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--neon-purple) / 0.5),
+      hsl(var(--neon-blue) / 0.3),
+      hsl(var(--neon-pink) / 0.3),
+      hsl(var(--neon-purple) / 0.5)
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+
+  /* Logline cinematic */
+  .logline-text {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.02em;
   }
 
   /* Terminal Text */
