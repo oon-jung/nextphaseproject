@@ -15,10 +15,10 @@ const systemArchitecture = [
 ];
 
 const developerLog = [
-  { name: 'Kim Woon Jung', role: 'AI Design, AI Video Production, CLO 3D, Web Development' },
+  { name: 'Kim Woon Jung', role: 'AI Image & Video Generation, Video Editing, CLO 3D, Web Development' },
   { name: 'Seo Eun Hyeon', role: '3D Modeling, Rigging, Animation' },
   { name: 'Park Young Jun', role: 'Interaction Design, 3D Printing, Stage Design, Animation, Game Engine Development' },
-  { name: 'Lee Ji Soo', role: 'AI Design, AI Video Production, 3D Modeling, Texturing' },
+  { name: 'Lee Ji Soo', role: 'AI Image & Video Generation, Video Editing, 3D Modeling, Texturing' },
 ];
 
 export const FooterSection = () => {

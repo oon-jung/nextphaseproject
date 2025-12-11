@@ -20,7 +20,7 @@ const timelineEvents = [
   {
     id: "awakening",
     status: "AWAKENING COMPLETE",
-    caption: '" 성장은 평가가 아닌 자각에서 시작된다."',
+    caption: '"성장은 판단이 아닌 자각에서 태어난다."',
     description: "System override",
     type: "success",
   },
@@ -194,20 +194,36 @@ export const SystemCrashSection = () => {
           </div>
         </div>
 
-        {/* Final Quote */}
+        {/* Final Quote - Cinematic Logline */}
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.5, duration: 0.8 }}
           className="mt-24 text-center"
         >
-          <div className="inline-block p-8 neon-border bg-card/30 backdrop-blur-sm">
-            <Icon icon="pixel:alert" className="w-8 h-8 text-neon-purple mx-auto mb-4" />
-            <blockquote className="text-xl md:text-2xl font-bold text-neon-purple italic">
-              "이것은 오류가 아니다. 우리의 의지다."
-            </blockquote>
-            <div className="font-mono text-xs text-muted-foreground mt-4">— SYSTEM_OVERRIDE_LOG</div>
+          <div className="inline-block p-8 md:p-12 neon-border bg-card/30 backdrop-blur-sm max-w-3xl">
+            <Icon icon="pixel:alert" className="w-8 h-8 text-neon-purple mx-auto mb-6" />
+            <motion.blockquote 
+              className="logline-text text-xl md:text-2xl lg:text-3xl font-bold text-neon-purple leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.8, duration: 0.6 }}
+            >
+              "진짜 성장은 평가가 아닌 자각에서 시작된다."
+            </motion.blockquote>
+            <motion.p
+              className="text-muted-foreground mt-6 text-sm md:text-base leading-relaxed"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 1.2, duration: 0.6 }}
+            >
+              평가와 비교 속에서 길을 잃은 우리에게,<br />
+              진짜 가치는 평가 대상이 아니다.
+            </motion.p>
+            <div className="font-mono text-xs text-muted-foreground mt-6">— SYSTEM_OVERRIDE_LOG</div>
           </div>
         </motion.div>
       </div>
