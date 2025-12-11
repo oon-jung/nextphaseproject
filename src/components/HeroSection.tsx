@@ -89,7 +89,7 @@ export const HeroSection = () => {
             transition={{ delay: 1.2 }}
             className="font-mono text-xs md:text-sm text-muted-foreground max-w-xl mx-auto"
           >
-            A 2D–3D Hybrid Interactive Music Video // Capstone Design Project I in the Department of Art & Technology
+            A 2D–3D Hybrid Interactive Music Video
           </motion.p>
         </motion.div>
 
