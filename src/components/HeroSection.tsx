@@ -41,7 +41,7 @@ export const HeroSection = () => {
       {/* Unicorn Studio Background */}
       <div className="absolute inset-0 z-0">
         <div
-          data-us-project="5cdsodKRg5XKOUHPRYha"
+          data-us-project="hBI0EyOB70Hw8PVcxHPG"
           className="w-full h-full"
           style={{ minWidth: "100%", minHeight: "100%" }}
         />
@@ -61,10 +61,10 @@ export const HeroSection = () => {
           {/* Main Title */}
           <h1
             className="glitch text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-6"
-            data-text="PROJECT NEXT PHASE"
+            data-text="NEXT PHASE PROJECT"
           >
             <span className="bg-gradient-to-r from-neon-purple via-foreground to-neon-blue bg-clip-text text-transparent">
-              PROJECT NEXT PHASE
+              NEXT PHASE PROJECT
             </span>
           </h1>
 
