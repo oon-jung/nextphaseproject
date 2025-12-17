@@ -9,13 +9,14 @@ const systemArchitecture = [
   'Substance Painter',
   'Midjourney',
   'Nanobanana Pro',
-  'Groq',
+  'Grok',
   'Veo 3.1',
   'CLO 3D',
+  'SUNO AI',
 ];
 
 const developerLog = [
-  { name: 'Kim Woon Jung', role: 'AI Image & Video Generation, Video Editing, CLO 3D, Web Development' },
+  { name: 'Kim Woon Jung', role: 'AI Image & Video Generation, Video Editing, CLO 3D, Web Development, AI Music' },
   { name: 'Seo Eun Hyeon', role: '3D Modeling, Rigging, Animation' },
   { name: 'Park Young Jun', role: 'Interaction Design, 3D Printing, Stage Design, Animation, Game Engine Development' },
   { name: 'Lee Ji Soo', role: 'AI Image & Video Generation, Video Editing, 3D Modeling, Texturing' },
