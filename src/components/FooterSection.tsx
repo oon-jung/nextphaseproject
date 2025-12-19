@@ -124,6 +124,34 @@ export const FooterSection = () => {
           >
             <Icon icon="pixel:arrow-up" className="w-5 h-5 text-muted-foreground group-hover:text-neon-purple transition-colors" />
           </motion.button>
+
+          {/* PDF Downloads */}
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <a
+              href="/docs/프로젝트제안서.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-[10px] text-muted-foreground/60 hover:text-neon-cyan transition-colors underline underline-offset-2"
+            >
+              [제안서.pdf]
+            </a>
+            <a
+              href="/docs/프로젝트_최종보고서.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-[10px] text-muted-foreground/60 hover:text-neon-cyan transition-colors underline underline-offset-2"
+            >
+              [최종보고서.pdf]
+            </a>
+            <a
+              href="/docs/결과물_매뉴얼.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-[10px] text-muted-foreground/60 hover:text-neon-cyan transition-colors underline underline-offset-2"
+            >
+              [매뉴얼.pdf]
+            </a>
+          </div>
         </motion.div>
       </div>
     </footer>
