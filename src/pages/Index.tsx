@@ -3,6 +3,7 @@ import { HeroSection } from '@/components/HeroSection';
 import { WorldviewSection } from '@/components/WorldviewSection';
 import { CharactersSection } from '@/components/CharactersSection';
 import { AudioPlayerSection } from '@/components/AudioPlayerSection';
+import { VideoSection } from '@/components/VideoSection';
 import { SystemCrashSection } from '@/components/SystemCrashSection';
 import { RealityDebutSection } from '@/components/RealityDebutSection';
 import { FooterSection } from '@/components/FooterSection';
@@ -22,6 +23,7 @@ const Index = () => {
         <WorldviewSection />
         <CharactersSection />
         <AudioPlayerSection />
+        <VideoSection />
         <SystemCrashSection />
         <RealityDebutSection />
         <FooterSection />
