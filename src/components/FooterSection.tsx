@@ -128,25 +128,22 @@ export const FooterSection = () => {
           {/* PDF Downloads */}
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <a
-              href="/docs/프로젝트제안서.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/docs/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EC%A0%9C%EC%95%88%EC%84%9C.pdf"
+              download="프로젝트제안서.pdf"
               className="font-mono text-[10px] text-muted-foreground/60 hover:text-neon-cyan transition-colors underline underline-offset-2"
             >
               [제안서.pdf]
             </a>
             <a
-              href="/docs/프로젝트_최종보고서.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/docs/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8_%EC%B5%9C%EC%A2%85%EB%B3%B4%EA%B3%A0%EC%84%9C.pdf"
+              download="프로젝트_최종보고서.pdf"
               className="font-mono text-[10px] text-muted-foreground/60 hover:text-neon-cyan transition-colors underline underline-offset-2"
             >
               [최종보고서.pdf]
             </a>
             <a
-              href="/docs/결과물_매뉴얼.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/docs/%EA%B2%B0%EA%B3%BC%EB%AC%BC_%EB%A7%A4%EB%89%B4%EC%96%BC.pdf"
+              download="결과물_매뉴얼.pdf"
               className="font-mono text-[10px] text-muted-foreground/60 hover:text-neon-cyan transition-colors underline underline-offset-2"
             >
               [매뉴얼.pdf]
